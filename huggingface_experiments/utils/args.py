@@ -31,24 +31,28 @@ def apiArgs() -> Namespace:
         epilog=f"Tests written by: {', '.join(authors)}",
     )
     parser.add_argument(
+        "-a",
         "--admin-token",
         type=str,
         required=True,
         help="The API Access Token of the/ an admin of the organization",
     )
     parser.add_argument(
+        "-w",
         "--write-token",
         type=str,
         required=True,
         help="The API Access Token of a user with write permissions for an organization",
     )
     parser.add_argument(
+        "-r",
         "--read-token",
         type=str,
         required=True,
         help="The API Access Token of a user with read permissions for an organization",
     )
     parser.add_argument(
+        "-n",
         "--repo-name",
         type=str,
         required=False,
@@ -56,6 +60,7 @@ def apiArgs() -> Namespace:
         help="The name of the test repository to use. NOTE: This is temporary and will be deleted at the end of this experiment.",
     )
     parser.add_argument(
+        "-o",
         "--organization",
         type=str,
         required=True,
