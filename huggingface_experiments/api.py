@@ -9,7 +9,7 @@ from utils.args import apiArgs
 rootURL: str = "https://huggingface.co"
 
 
-def createModelRepo(token: str, name: str, organization: str = None) -> int:
+def createModelRepo(token: str, name: str, organization: str = None) -> Response:
     url: str = f"{rootURL}/api/repos/create"
     headers: dict = {"authorization": f"Bearer {token}"}
 
@@ -20,7 +20,7 @@ def createModelRepo(token: str, name: str, organization: str = None) -> int:
             json: dict = {"name": name, "organization": organization}
 
     p: Response = post(url, headers=headers, json=json)
-    return p.content
+    return p
 
 
 def main() -> None:
