@@ -14,18 +14,19 @@ def apiArgs() -> Namespace:
         "--admin-token",
         type=str,
         required=True,
-        help="The API Access Token of admin of the Organization",
+        help="The API Access Token of the/ an admin of the organization",
     )
     parser.add_argument(
         "--write-token",
         type=str,
         required=True,
-        help="The API Access Token of a user with write permissions for an Organization",
+        help="The API Access Token of a user with write permissions for an organization",
     )
     parser.add_argument(
         "--read-token",
         type=str,
         required=True,
-        help="The API Access Token of a user with read permissions for an Organization",
+        help="The API Access Token of a user with read permissions for an organization",
     )
+    parser.add_argument("--repo-name", type=str, required=False, default="test", help="The name of the test repository to use. NOTE: This is temporary and will be deleted at the end of this experiment.")
     return parser.parse_args()
