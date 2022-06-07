@@ -1,7 +1,27 @@
-from argparse import ArgumentParser, Namespace
+from argparse import ArgumentParser, HelpFormatter, Namespace
+from operator import attrgetter
 
 name: str = "HuggingFace.co"
 authors: list = ["Nicholas M. Synovic"]
+
+
+class SortingHelpFormatter(HelpFormatter):
+    """
+    SortingHelpFormatter _summary_
+    _extended_summary_
+    :param HelpFormatter: _description_
+    :type HelpFormatter: _type_
+    """
+
+    def add_arguments(self, actions):
+        """
+        add_arguments _summary_
+        _extended_summary_
+        :param actions: _description_
+        :type actions: _type_
+        """
+        actions = sorted(actions, key=attrgetter("option_strings"))
+        super(SortingHelpFormatter, self).add_arguments(actions)
 
 
 def apiArgs() -> Namespace:
@@ -28,5 +48,17 @@ def apiArgs() -> Namespace:
         required=True,
         help="The API Access Token of a user with read permissions for an organization",
     )
-    parser.add_argument("--repo-name", type=str, required=False, default="test", help="The name of the test repository to use. NOTE: This is temporary and will be deleted at the end of this experiment.")
+    parser.add_argument(
+        "--repo-name",
+        type=str,
+        required=False,
+        default="test",
+        help="The name of the test repository to use. NOTE: This is temporary and will be deleted at the end of this experiment.",
+    )
+    parser.add_argument(
+        "--organization",
+        type=str,
+        required=True,
+        help="The organization to test user access on.",
+    )
     return parser.parse_args()
