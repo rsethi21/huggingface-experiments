@@ -4,7 +4,7 @@ from pathlib import Path
 
 from requests import delete, get, post, put
 from requests.models import Response
-from utils.args import apiArgs
+from huggingface_experiments.utils.args import apiArgs
 
 rootURL: str = "https://huggingface.co"
 
