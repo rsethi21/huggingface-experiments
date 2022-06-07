@@ -86,7 +86,6 @@ def deleteModelRepo(token: str, organization: str, name: str) -> Response:
 
 def testUser() -> None:
     args: Namespace = apiArgs()
-    print("Testing the HuggableFace.co REST API...\n===")
     print("Retrieving account information from tokens...")
     adminUsername: str = whoAmI(token=args.admin_token).json()["name"]
     writeUsername: str = whoAmI(token=args.write_token).json()["name"]
@@ -94,13 +93,13 @@ def testUser() -> None:
     accountList: list = [writeUsername, readUsername]
     accountList_Admin: list = [adminUsername, writeUsername, readUsername]
 
-    print(f"===\nDeleting {args.repo_name} on {adminUsername}")
+    print(f"===\nDeleting {adminUsername}/{args.repo_name} with {adminUsername}")
     deleteModelRepo(
         token=args.admin_token, organization=adminUsername, name=args.repo_name
     )
 
     print(
-        f"===\nCreating {args.repo_name} on {adminUsername} from {', '.join(accountList_Admin)}"
+        f"===\nCreating {adminUsername}/{args.repo_name} with {', '.join(accountList_Admin)}"
     )
     adminCreate: int = createModelRepo(
         token=args.admin_token, organization=adminUsername, name=args.repo_name
@@ -114,7 +113,7 @@ def testUser() -> None:
     print(f"Status code results: {[adminCreate, writeCreate, readCreate]}")
 
     print(
-        f"===\nSetting private {args.repo_name} on {adminUsername} from {', '.join(accountList)}"
+        f"===\nSetting private {adminUsername}/{args.repo_name} with {', '.join(accountList)}"
     )
     writePrivate: int = makePrivateModelRepo(
         token=args.write_token,
@@ -130,9 +129,7 @@ def testUser() -> None:
     ).status_code
     print(f"Status code results: {[writePrivate, readPrivate]}")
 
-    print(
-        f"===\nSetting private {args.repo_name} on {adminUsername} from {adminUsername}"
-    )
+    print(f"===\nSetting private {adminUsername}/{args.repo_name} with {adminUsername}")
     adminPrivate: int = makePrivateModelRepo(
         token=args.admin_token,
         organization=adminUsername,
@@ -142,8 +139,14 @@ def testUser() -> None:
     print(f"Status code result: {[adminPrivate]}")
 
     print(
-        f"===\nSetting public {args.repo_name} on {adminUsername} from {', '.join(accountList)}"
+        f"===\nSetting public {adminUsername}/{args.repo_name} with {', '.join(accountList)}"
     )
+    adminPublic: int = makePrivateModelRepo(
+        token=args.admin_token,
+        organization=adminUsername,
+        name=args.repo_name,
+        private=False,
+    ).status_code
     writePublic: int = makePrivateModelRepo(
         token=args.write_token,
         organization=adminUsername,
@@ -156,22 +159,17 @@ def testUser() -> None:
         name=args.repo_name,
         private=False,
     ).status_code
-    print(f"Status code results: {[writePublic, readPublic]}")
+    print(f"Status code results: {[adminPublic, writePublic, readPublic]}")
 
     print(
-        f"===\nSetting public {args.repo_name} on {adminUsername} from {adminUsername}"
+        f"===\nCommitting file to {adminUsername}/{args.repo_name} with {', '.join(accountList_Admin)}"
     )
-    adminPrivate: int = makePrivateModelRepo(
+    adminCommit: int = commitFileToModelRepo(
         token=args.admin_token,
         organization=adminUsername,
         name=args.repo_name,
-        private=False,
+        filepath="test/adminTest.txt",
     ).status_code
-    print(f"Status code result: {[adminPrivate]}")
-
-    print(
-        f"===\nCommitting file to {args.repo_name} on {adminUsername} from {', '.join(accountList)}"
-    )
     writeCommit: int = commitFileToModelRepo(
         token=args.write_token,
         filepath="test/writeTest.txt",
@@ -184,22 +182,17 @@ def testUser() -> None:
         organization=adminUsername,
         name=args.repo_name,
     ).status_code
-    print(f"Status code results: {[writeCommit, readCommit]}")
+    print(f"Status code results: {[adminCommit, writeCommit, readCommit]}")
 
     print(
-        f"===\nCommitting file to {args.repo_name} on {adminUsername} from {adminUsername}"
+        f"===\nCreating a Pull Request for a file to {adminUsername}/{args.repo_name} with {', '.join(accountList_Admin)}"
     )
-    adminCommit: int = commitFileToModelRepo(
+    adminPullRequest: int = pullRequestFileToModelRepo(
         token=args.admin_token,
         organization=adminUsername,
         name=args.repo_name,
         filepath="test/adminTest.txt",
     ).status_code
-    print(f"Status code result: {[adminCommit]}")
-
-    print(
-        f"===\nCreating a Pull Request for a file to {args.repo_name} on {adminUsername} from {', '.join(accountList)}"
-    )
     writePullRequest: int = pullRequestFileToModelRepo(
         token=args.write_token,
         filepath="test/writeTest.txt",
@@ -212,20 +205,9 @@ def testUser() -> None:
         organization=adminUsername,
         name=args.repo_name,
     ).status_code
-    print(f"Status code results: {[writePullRequest, readPullRequest]}")
+    print(f"Status code results: {[adminPullRequest, writePullRequest, readPullRequest]}")
 
-    print(
-        f"===\nCreating a Pull Request to {args.repo_name} on {adminUsername} from {adminUsername}"
-    )
-    adminPullRequest: int = pullRequestFileToModelRepo(
-        token=args.admin_token,
-        organization=adminUsername,
-        name=args.repo_name,
-        filepath="test/adminTest.txt",
-    ).status_code
-    print(f"Status code result: {[adminPullRequest]}")
-
-    getpass(f"Press ENTER to delete {args.repo_name}")
+    getpass(f"Press ENTER to delete {adminUsername}/{args.repo_name}")
     print(f"===\nDeleting {args.repo_name} on {adminUsername}")
     deleteModelRepo(
         token=args.admin_token, organization=adminUsername, name=args.repo_name
@@ -234,7 +216,6 @@ def testUser() -> None:
 
 def testOrganization() -> None:
     args: Namespace = apiArgs()
-    print("Testing the HuggableFace.co REST API...\n===")
     print("Retrieving account information from tokens...")
     adminUsername: str = whoAmI(token=args.admin_token).json()["name"]
     writeUsername: str = whoAmI(token=args.write_token).json()["name"]
@@ -242,22 +223,22 @@ def testOrganization() -> None:
     accountList: list = [writeUsername, readUsername]
     accountList_Admin: list = [adminUsername, writeUsername, readUsername]
 
-    print(f"===\nDeleting {args.repo_name} on {adminUsername}")
+    print(f"===\nDeleting {args.repo_name} on {args.organization}")
     deleteModelRepo(
-        token=args.admin_token, organization=adminUsername, name=args.repo_name
+        token=args.admin_token, organization=args.organization, name=args.repo_name
     )
 
     print(
         f"===\nCreating {args.repo_name} on {adminUsername} from {', '.join(accountList_Admin)}"
     )
     adminCreate: int = createModelRepo(
-        token=args.admin_token, organization=adminUsername, name=args.repo_name
+        token=args.admin_token, organization=args.organization, name=args.repo_name
     ).status_code
     writeCreate: int = createModelRepo(
-        token=args.write_token, organization=adminUsername, name=args.repo_name
+        token=args.write_token, organization=args.organization, name=args.repo_name
     ).status_code
     readCreate: int = createModelRepo(
-        token=args.read_token, organization=adminUsername, name=args.repo_name
+        token=args.read_token, organization=args.organization, name=args.repo_name
     ).status_code
     print(f"Status code results: {[adminCreate, writeCreate, readCreate]}")
 
@@ -266,13 +247,13 @@ def testOrganization() -> None:
     )
     writePrivate: int = makePrivateModelRepo(
         token=args.write_token,
-        organization=adminUsername,
+        organization=args.organization,
         name=args.repo_name,
         private=True,
     ).status_code
     readPrivate: int = makePrivateModelRepo(
         token=args.read_token,
-        organization=adminUsername,
+        organization=args.organization,
         name=args.repo_name,
         private=True,
     ).status_code
@@ -283,7 +264,7 @@ def testOrganization() -> None:
     )
     adminPrivate: int = makePrivateModelRepo(
         token=args.admin_token,
-        organization=adminUsername,
+        organization=args.organization,
         name=args.repo_name,
         private=True,
     ).status_code
@@ -294,13 +275,13 @@ def testOrganization() -> None:
     )
     writePublic: int = makePrivateModelRepo(
         token=args.write_token,
-        organization=adminUsername,
+        organization=args.organization,
         name=args.repo_name,
         private=False,
     ).status_code
     readPublic: int = makePrivateModelRepo(
         token=args.read_token,
-        organization=adminUsername,
+        organization=args.organization,
         name=args.repo_name,
         private=False,
     ).status_code
@@ -311,7 +292,7 @@ def testOrganization() -> None:
     )
     adminPrivate: int = makePrivateModelRepo(
         token=args.admin_token,
-        organization=adminUsername,
+        organization=args.organization,
         name=args.repo_name,
         private=False,
     ).status_code
@@ -323,13 +304,13 @@ def testOrganization() -> None:
     writeCommit: int = commitFileToModelRepo(
         token=args.write_token,
         filepath="test/writeTest.txt",
-        organization=adminUsername,
+        organization=args.organization,
         name=args.repo_name,
     ).status_code
     readCommit: int = commitFileToModelRepo(
         token=args.read_token,
         filepath="test/readTest.txt",
-        organization=adminUsername,
+        organization=args.organization,
         name=args.repo_name,
     ).status_code
     print(f"Status code results: {[writeCommit, readCommit]}")
@@ -339,7 +320,7 @@ def testOrganization() -> None:
     )
     adminCommit: int = commitFileToModelRepo(
         token=args.admin_token,
-        organization=adminUsername,
+        organization=args.organization,
         name=args.repo_name,
         filepath="test/adminTest.txt",
     ).status_code
@@ -351,13 +332,13 @@ def testOrganization() -> None:
     writePullRequest: int = pullRequestFileToModelRepo(
         token=args.write_token,
         filepath="test/writeTest.txt",
-        organization=adminUsername,
+        organization=args.organization,
         name=args.repo_name,
     ).status_code
     readPullRequest: int = pullRequestFileToModelRepo(
         token=args.read_token,
         filepath="test/readTest.txt",
-        organization=adminUsername,
+        organization=args.organization,
         name=args.repo_name,
     ).status_code
     print(f"Status code results: {[writePullRequest, readPullRequest]}")
@@ -367,22 +348,22 @@ def testOrganization() -> None:
     )
     adminPullRequest: int = pullRequestFileToModelRepo(
         token=args.admin_token,
-        organization=adminUsername,
+        organization=args.organization,
         name=args.repo_name,
         filepath="test/adminTest.txt",
     ).status_code
     print(f"Status code result: {[adminPullRequest]}")
 
-    getpass(f"Press ENTER to delete {args.repo_name}")
+    getpass(f"Press ENTER to delete {args.organization}/{args.repo_name}")
     print(f"===\nDeleting {args.repo_name} on {adminUsername}")
     deleteModelRepo(
-        token=args.admin_token, organization=adminUsername, name=args.repo_name
+        token=args.admin_token, organization=args.organization, name=args.repo_name
     )
 
 
 def main() -> None:
     testUser()
-    testOrganization()
+    # testOrganization()
 
 
 if __name__ == "__main__":
