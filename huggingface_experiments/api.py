@@ -1,9 +1,7 @@
-from argparse import Namespace
 from pathlib import Path
 
 from requests import delete, post, put
 from requests.models import Response
-from utils.args import apiArgs
 
 rootURL: str = "https://huggingface.co"
 
@@ -22,18 +20,10 @@ def createModelRepo(token: str, name: str, organization: str = None) -> Response
     return p
 
 
-def deleteModelRepo(token: str, name: str, organization: str) -> Response:
-    url: str = f"{rootURL}/api/repos/delete"
-    headers: dict = {"authorization": f"Bearer {token}"}
-    json: dict = {"name": name, "organization": organization}
-    d: Response = delete(url, headers=headers, json=json)
-    return d
-
-
 def makePrivateModelRepo(
-    token: str, name: str, organization: str, private: str = "private"
+    token: str, name: str, organization: str, private: bool = True
 ) -> Response:
-    url: str = f"{rootURL}/api/repos/model/{organization}/{name}/settings"
+    url: str = f"{rootURL}/api/{organization}/{name}/settings"
     headers: dict = {"authorization": f"Bearer {token}"}
     json: dict = {"private": private}
     mp: Response = put(url, headers=headers, json=json)
@@ -63,15 +53,9 @@ def uploadFileToModelRepo(
     return u
 
 
-def main() -> None:
-    args: Namespace = apiArgs()
-    print(createModelRepo(token=args.admin_token, name="test1").content)
-    print(
-        deleteModelRepo(
-            token=args.admin_token, name="test1", organization="NicholasSynovic"
-        ).content
-    )
-
-
-if __name__ == "__main__":
-    main()
+def deleteModelRepo(token: str, name: str, organization: str) -> Response:
+    url: str = f"{rootURL}/api/repos/delete"
+    headers: dict = {"authorization": f"Bearer {token}"}
+    json: dict = {"name": name, "organization": organization}
+    d: Response = delete(url, headers=headers, json=json)
+    return d
