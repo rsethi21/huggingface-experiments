@@ -29,24 +29,33 @@ def deleteModelRepo(token: str, name: str, organization: str) -> Response:
     d: Response = delete(url, headers=headers, json=json)
     return d
 
-def makePrivateModelRepo(token: str, name: str, organization: str, private: str = "private")   ->  Response:
+
+def makePrivateModelRepo(
+    token: str, name: str, organization: str, private: str = "private"
+) -> Response:
     url: str = f"{rootURL}/api/repos/model/{organization}/{name}/settings"
     headers: dict = {"authorization": f"Bearer {token}"}
     json: dict = {"private": private}
     mp: Response = put(url, headers=headers, json=json)
     return mp
 
-def moveModelRepo(token: str, fromRepo: str, toRepo: str)   ->  Response:
+
+def moveModelRepo(token: str, fromRepo: str, toRepo: str) -> Response:
     url: str = f"{rootURL}/api/repos/move"
     headers: dict = {"authorization": f"Bearer {token}"}
     json: dict = {"fromRepo": fromRepo, "toRepo": toRepo}
     m: Response = post(url, headers=headers, json=json)
     return m
 
-def uploadFileToModelRepo(token: str, filepath: str, name: str, organization: str, revision: str = "1") ->  Response:
+
+def uploadFileToModelRepo(
+    token: str, filepath: str, name: str, organization: str, revision: str = "1"
+) -> Response:
     path: Path = Path(filepath)
 
-    url: str = f"{rootURL}/api/model/{name}/{organization}/upload/{revision}/{path.name}"
+    url: str = (
+        f"{rootURL}/api/model/{name}/{organization}/upload/{revision}/{path.name}"
+    )
     headers: dict = {"authorization": f"Bearer {token}"}
     with open(filepath, "rb") as bytesFile:
         u: Response = post(url, data=bytesFile.raw, headers=headers)
