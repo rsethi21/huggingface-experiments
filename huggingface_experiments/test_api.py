@@ -108,6 +108,14 @@ def _verboseUpload(
     print(f"Status code results: {[adminCommit, writeCommit, readCommit]}")
 
 
+def _verboseMove(token: str, username: str, fromRepo: str, toRepo: str) -> None:
+    print(
+        f"===\nMoving repository from {fromRepo} to {toRepo} with {', '.join(username)}"
+    )
+    move: int = moveModelRepo(token=token, fromRepo=fromRepo, toRepo=toRepo).status_code
+    print(f"Status code results: {[move]}")
+
+
 def test(
     tokenList: list, usernameList: list, repository: str, organization: str = None
 ) -> None:
@@ -178,6 +186,27 @@ def test(
         usernameList=usernameList,
         pullRequest=True,
     )
+
+    _verboseMove(
+        token=tokenList[2],
+        username=usernameList[2],
+        fromRepo=f"{organization}/{repository}",
+        toRepo=f"{organization}/{repository}1",
+    )  # Read
+
+    _verboseMove(
+        token=tokenList[1],
+        username=usernameList[1],
+        fromRepo=f"{organization}/{repository}",
+        toRepo=f"{organization}/{repository}1",
+    )  # Write
+
+    _verboseMove(
+        token=tokenList[0],
+        username=usernameList[0],
+        fromRepo=f"{organization}/{repository}",
+        toRepo=f"{organization}/{repository}1",
+    )  # Read
 
     _verboseDelete(
         organization=organization,
