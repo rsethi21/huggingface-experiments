@@ -2,8 +2,6 @@ from argparse import Namespace
 
 from huggingface_experiments.api import *
 
-# from api import *
-
 
 def _verboseDelete(
     organization: str, repository: str, token: str, username: str
