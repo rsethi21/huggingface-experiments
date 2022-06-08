@@ -1,8 +1,10 @@
 from argparse import Namespace
-from huggingface_experiments.utils.args import apiArgs
 
-from huggingface_hub import delete_repo, create_repo, update_repo_visibility, upload_file, move_repo, whoami
+from huggingface_hub import (create_repo, delete_repo, move_repo,
+                             update_repo_visibility, upload_file, whoami)
 from requests.exceptions import HTTPError
+
+from huggingface_experiments.utils.args import apiArgs
 
 
 def _verboseDelete(
@@ -19,9 +21,15 @@ def _verboseCreateRepo(
     organization: str, repository: str, tokenList: list, usernameList: list
 ) -> None:
     print(f"===\nCreating {organization}/{repository} with {', '.join(usernameList)}")
-    adminCreate: str = create_repo(repo_id=f"{organization}/{repository}", token=tokenList[0])
-    writeCreate: str = create_repo(repo_id=f"{organization}/{repository}", token=tokenList[1])
-    readCreate: str = create_repo(repo_id=f"{organization}/{repository}", token=tokenList[2])
+    adminCreate: str = create_repo(
+        repo_id=f"{organization}/{repository}", token=tokenList[0]
+    )
+    writeCreate: str = create_repo(
+        repo_id=f"{organization}/{repository}", token=tokenList[1]
+    )
+    readCreate: str = create_repo(
+        repo_id=f"{organization}/{repository}", token=tokenList[2]
+    )
     print(f"Status code results: {[adminCreate, writeCreate, readCreate]}")
 
 
@@ -29,7 +37,9 @@ def _verboseSetPrivate(
     organization: str, repository: str, token: str, username: str
 ) -> None:
     print(f"===\nSetting private {organization}/{repository} with {username}")
-    private: dict = update_repo_visibility(repo_id=f"{organization}/{repository}", private=True, token=token)
+    private: dict = update_repo_visibility(
+        repo_id=f"{organization}/{repository}", private=True, token=token
+    )
     print(f"Status code result: {[private]}")
 
 
@@ -39,9 +49,15 @@ def _verboseSetPublic(
     print(
         f"===\nSetting public {organization}/{repository} with {', '.join(usernameList)}"
     )
-    adminPublic: dict = update_repo_visibility(repo_id=f"{organization}/{repository}", private=False, token=tokenList[0])
-    writePublic: dict = update_repo_visibility(repo_id=f"{organization}/{repository}", private=False, token=tokenList[1])
-    readPublic: dict = update_repo_visibility(repo_id=f"{organization}/{repository}", private=False, token=tokenList[2])
+    adminPublic: dict = update_repo_visibility(
+        repo_id=f"{organization}/{repository}", private=False, token=tokenList[0]
+    )
+    writePublic: dict = update_repo_visibility(
+        repo_id=f"{organization}/{repository}", private=False, token=tokenList[1]
+    )
+    readPublic: dict = update_repo_visibility(
+        repo_id=f"{organization}/{repository}", private=False, token=tokenList[2]
+    )
     print(f"Status code results: {[adminPublic, writePublic, readPublic]}")
 
 
@@ -60,21 +76,38 @@ def _verboseUpload(
         print(
             f"===\nCommitting file to {organization}/{repository} with {', '.join(usernameList)}"
         )
-    adminCommit: str = upload_file(path_or_fileobj="test/adminTest.txt", path_in_repo=".", repo_id=f"{organization}/{repository}", token=tokenList[0])
-    writeCommit: str = upload_file(path_or_fileobj="test/writeTest.txt", path_in_repo=".", repo_id=f"{organization}/{repository}", token=tokenList[0])
-    readCommit: str = upload_file(path_or_fileobj="test/readTest.txt", path_in_repo=".", repo_id=f"{organization}/{repository}", token=tokenList[0])
+    adminCommit: str = upload_file(
+        path_or_fileobj="test/adminTest.txt",
+        path_in_repo=".",
+        repo_id=f"{organization}/{repository}",
+        token=tokenList[0],
+    )
+    writeCommit: str = upload_file(
+        path_or_fileobj="test/writeTest.txt",
+        path_in_repo=".",
+        repo_id=f"{organization}/{repository}",
+        token=tokenList[0],
+    )
+    readCommit: str = upload_file(
+        path_or_fileobj="test/readTest.txt",
+        path_in_repo=".",
+        repo_id=f"{organization}/{repository}",
+        token=tokenList[0],
+    )
     print(f"Status code results: {[adminCommit, writeCommit, readCommit]}")
 
 
 def _verboseMove(token: str, username: str, fromRepo: str, toRepo: str) -> None:
-    print(
-        f"===\nMoving repository from {fromRepo} to {toRepo} with {username}"
-    )
+    print(f"===\nMoving repository from {fromRepo} to {toRepo} with {username}")
     move_repo(from_id=fromRepo, to_id=toRepo, token=token)
 
 
 def test(
-    tokenList: list, usernameList: list, repository: str, movedRepository: str, organization: str = None
+    tokenList: list,
+    usernameList: list,
+    repository: str,
+    movedRepository: str,
+    organization: str = None,
 ) -> None:
     adminUsername: str = usernameList[0]
     writeUsername: str = usernameList[1]
@@ -207,7 +240,12 @@ def main() -> None:
 
     usernameList: list = [adminUsername, writeUsername, readUsername]
 
-    test(tokenList=tokenList, usernameList=usernameList, repository=repository, movedRepository=movedRepository)
+    test(
+        tokenList=tokenList,
+        usernameList=usernameList,
+        repository=repository,
+        movedRepository=movedRepository,
+    )
     test(
         tokenList=tokenList,
         usernameList=usernameList,

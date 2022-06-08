@@ -109,15 +109,17 @@ def _verboseUpload(
 
 
 def _verboseMove(token: str, username: str, fromRepo: str, toRepo: str) -> None:
-    print(
-        f"===\nMoving repository from {fromRepo} to {toRepo} with {username}"
-    )
+    print(f"===\nMoving repository from {fromRepo} to {toRepo} with {username}")
     move: int = moveModelRepo(token=token, fromRepo=fromRepo, toRepo=toRepo).status_code
     print(f"Status code results: {[move]}")
 
 
 def test(
-    tokenList: list, usernameList: list, repository: str, movedRepository: str, organization: str = None
+    tokenList: list,
+    usernameList: list,
+    repository: str,
+    movedRepository: str,
+    organization: str = None,
 ) -> None:
     adminUsername: str = usernameList[0]
     writeUsername: str = usernameList[1]
@@ -250,7 +252,12 @@ def main() -> None:
 
     usernameList: list = [adminUsername, writeUsername, readUsername]
 
-    test(tokenList=tokenList, usernameList=usernameList, repository=repository, movedRepository=movedRepository)
+    test(
+        tokenList=tokenList,
+        usernameList=usernameList,
+        repository=repository,
+        movedRepository=movedRepository,
+    )
     test(
         tokenList=tokenList,
         usernameList=usernameList,
