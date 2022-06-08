@@ -1,14 +1,21 @@
-from argparse import Namespace
 from pathlib import Path
 
-from requests import delete, post, put
+from requests import delete, get, post, put
 from requests.models import Response
-from utils.args import apiArgs
+
+from huggingface_experiments.utils.args import apiArgs
 
 rootURL: str = "https://huggingface.co"
 
 
-def createModelRepo(token: str, name: str, organization: str = None) -> Response:
+def whoAmI(token: str) -> Response:
+    url: str = f"{rootURL}/api/whoami-v2"
+    headers: dict = {"authorization": f"Bearer {token}"}
+    w: Response = get(url, headers=headers)
+    return w
+
+
+def createModelRepo(token: str, organization: str, name: str) -> Response:
     url: str = f"{rootURL}/api/repos/create"
     headers: dict = {"authorization": f"Bearer {token}"}
 
@@ -22,18 +29,10 @@ def createModelRepo(token: str, name: str, organization: str = None) -> Response
     return p
 
 
-def deleteModelRepo(token: str, name: str, organization: str) -> Response:
-    url: str = f"{rootURL}/api/repos/delete"
-    headers: dict = {"authorization": f"Bearer {token}"}
-    json: dict = {"name": name, "organization": organization}
-    d: Response = delete(url, headers=headers, json=json)
-    return d
-
-
 def makePrivateModelRepo(
-    token: str, name: str, organization: str, private: str = "private"
+    token: str, organization: str, name: str, private: bool = True
 ) -> Response:
-    url: str = f"{rootURL}/api/repos/model/{organization}/{name}/settings"
+    url: str = f"{rootURL}/api/{organization}/{name}/settings"
     headers: dict = {"authorization": f"Bearer {token}"}
     json: dict = {"private": private}
     mp: Response = put(url, headers=headers, json=json)
@@ -49,29 +48,29 @@ def moveModelRepo(token: str, fromRepo: str, toRepo: str) -> Response:
 
 
 def uploadFileToModelRepo(
-    token: str, filepath: str, name: str, organization: str, revision: str = "1"
+    token: str,
+    filepath: str,
+    organization: str,
+    name: str,
+    revision: str = "main",
+    pullRequest: bool = False,
 ) -> Response:
     path: Path = Path(filepath)
 
-    url: str = (
-        f"{rootURL}/api/model/{name}/{organization}/upload/{revision}/{path.name}"
-    )
+    if pullRequest:
+        url: str = f"{rootURL}/api/{organization}/{name}/upload/{revision}/{path.name}?create_pr=1"
+    else:
+        url: str = f"{rootURL}/api/{organization}/{name}/upload/{revision}/{path.name}"
     headers: dict = {"authorization": f"Bearer {token}"}
     with open(filepath, "rb") as bytesFile:
-        u: Response = post(url, data=bytesFile.raw, headers=headers)
+        c: Response = post(url, data=bytesFile.raw, headers=headers)
         bytesFile.close()
-    return u
+    return c
 
 
-def main() -> None:
-    args: Namespace = apiArgs()
-    print(createModelRepo(token=args.admin_token, name="test1").content)
-    print(
-        deleteModelRepo(
-            token=args.admin_token, name="test1", organization="NicholasSynovic"
-        ).content
-    )
-
-
-if __name__ == "__main__":
-    main()
+def deleteModelRepo(token: str, organization: str, name: str) -> Response:
+    url: str = f"{rootURL}/api/repos/delete"
+    headers: dict = {"authorization": f"Bearer {token}"}
+    json: dict = {"name": name, "organization": organization}
+    d: Response = delete(url, headers=headers, json=json)
+    return d
