@@ -117,7 +117,7 @@ def _verboseMove(token: str, username: str, fromRepo: str, toRepo: str) -> None:
 
 
 def test(
-    tokenList: list, usernameList: list, repository: str, organization: str = None
+    tokenList: list, usernameList: list, repository: str, movedRepository: str, organization: str = None
 ) -> None:
     adminUsername: str = usernameList[0]
     writeUsername: str = usernameList[1]
@@ -133,6 +133,12 @@ def test(
     _verboseDelete(
         organization=organization,
         repository=repository,
+        token=adminToken,
+        username=adminUsername,
+    )
+    _verboseDelete(
+        organization=organization,
+        repository=movedRepository,
         token=adminToken,
         username=adminUsername,
     )
@@ -191,21 +197,21 @@ def test(
         token=tokenList[2],
         username=usernameList[2],
         fromRepo=f"{organization}/{repository}",
-        toRepo=f"{organization}/{repository}1",
+        toRepo=f"{organization}/{movedRepository}",
     )  # Read
 
     _verboseMove(
         token=tokenList[1],
         username=usernameList[1],
         fromRepo=f"{organization}/{repository}",
-        toRepo=f"{organization}/{repository}1",
+        toRepo=f"{organization}/{movedRepository}",
     )  # Write
 
     _verboseMove(
         token=tokenList[0],
         username=usernameList[0],
         fromRepo=f"{organization}/{repository}",
-        toRepo=f"{organization}/{repository}1",
+        toRepo=f"{organization}/{movedRepository}",
     )  # Read
 
     _verboseDelete(
@@ -227,12 +233,13 @@ def test(
         repository=repository,
         token=tokenList[0],
         username=usernameList[0],
-    )  # Read
+    )  # Admin
 
 
 def main() -> None:
     args: Namespace = apiArgs()
-    repository: str = args.repo_name
+    repository: str = args.repository
+    movedRepository: str = args.moved_repository
     organization: str = args.organization
     tokenList: list = [args.admin_token, args.write_token, args.read_token]
 
@@ -243,11 +250,12 @@ def main() -> None:
 
     usernameList: list = [adminUsername, writeUsername, readUsername]
 
-    test(tokenList=tokenList, usernameList=usernameList, repository=repository)
+    test(tokenList=tokenList, usernameList=usernameList, repository=repository, movedRepository=movedRepository)
     test(
         tokenList=tokenList,
         usernameList=usernameList,
         repository=repository,
+        movedRepository=movedRepository,
         organization=organization,
     )
 

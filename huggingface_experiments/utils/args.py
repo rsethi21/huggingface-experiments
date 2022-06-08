@@ -53,11 +53,19 @@ def apiArgs() -> Namespace:
     )
     parser.add_argument(
         "-n",
-        "--repo-name",
+        "--repository",
         type=str,
         required=False,
         default="test",
         help="The name of the test repository to use. NOTE: This is temporary and will be deleted at the end of this experiment.",
+    )
+    parser.add_argument(
+        "-m",
+        "--moved-repository",
+        type=str,
+        required=False,
+        default="test",
+        help="The name of the test repository after it has been moved. NOTE: This is temporary and will be deleted at the end of this experiment.",
     )
     parser.add_argument(
         "-o",
