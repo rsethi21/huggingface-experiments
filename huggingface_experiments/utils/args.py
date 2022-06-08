@@ -65,7 +65,7 @@ def apiArgs() -> Namespace:
         "--moved-repository",
         type=str,
         required=False,
-        default="test",
+        default="test1",
         help="The name of the test repository after it has been moved. NOTE: This is temporary and will be deleted at the end of this experiment.",
     )
     parser.add_argument(
