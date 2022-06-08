@@ -36,21 +36,21 @@ def apiArgs() -> Namespace:
         "--admin-token",
         type=str,
         required=True,
-        help="The API Access Token of the/ an admin of the organization",
+        help="The API Access Token of the/ an admin of the organization.",
     )
     parser.add_argument(
         "-w",
         "--write-token",
         type=str,
         required=True,
-        help="The API Access Token of a user with write permissions for an organization",
+        help="The API Access Token of a user with write permissions for an organization.",
     )
     parser.add_argument(
         "-r",
         "--read-token",
         type=str,
         required=True,
-        help="The API Access Token of a user with read permissions for an organization",
+        help="The API Access Token of a user with read permissions for an organization.",
     )
     parser.add_argument(
         "-n",
@@ -74,5 +74,29 @@ def apiArgs() -> Namespace:
         type=str,
         required=True,
         help="The organization to test user access on.",
+    )
+    return parser.parse_args()
+
+
+def searchArgs() -> Namespace:
+    parser: ArgumentParser = ArgumentParser(
+        prog=f"{name} Search Utility",
+        usage="Utility to search HuggingFace.co via its REST API to get git clone compatible links in a .txt file",
+        epilog=f"Utility written by: {', '.join(authors)}",
+        formatter_class=SortingHelpFormatter,
+    )
+    parser.add_argument(
+        "-t",
+        "--token",
+        type=str,
+        required=True,
+        help="HuggingFace.co API access token.",
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        type=str,
+        required=True,
+        help="Output .txt file to dump data to.",
     )
     return parser.parse_args()

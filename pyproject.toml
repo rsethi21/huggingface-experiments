@@ -8,13 +8,14 @@ authors = ["Nicholas M. Synovic <nicholas.synovic@gmail.com>"]
 python = "^3.10"
 huggingface-hub = "^0.7.0"
 requests = "^2.27.1"
+progress = "^1.6"
 
 [tool.poetry.dev-dependencies]
 black = "^22.3.0"
 isort = "^5.10.1"
 
 [tool.poetry.scripts]
-hf-test-api = "huggingface_experiments.test_api:main"
+hf-test-api = "huggingface_experiments.testAPI:main"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
