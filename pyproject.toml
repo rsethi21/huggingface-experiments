@@ -13,6 +13,9 @@ requests = "^2.27.1"
 black = "^22.3.0"
 isort = "^5.10.1"
 
+[tool.poetry.scripts]
+hf-test-api = "huggingface_experiments.test_api:main"
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

@@ -1,12 +1,21 @@
 from pathlib import Path
 
-from requests import delete, post, put
+from requests import delete, get, post, put
 from requests.models import Response
+
+from huggingface_experiments.utils.args import apiArgs
 
 rootURL: str = "https://huggingface.co"
 
 
-def createModelRepo(token: str, name: str, organization: str = None) -> Response:
+def whoAmI(token: str) -> Response:
+    url: str = f"{rootURL}/api/whoami-v2"
+    headers: dict = {"authorization": f"Bearer {token}"}
+    w: Response = get(url, headers=headers)
+    return w
+
+
+def createModelRepo(token: str, organization: str, name: str) -> Response:
     url: str = f"{rootURL}/api/repos/create"
     headers: dict = {"authorization": f"Bearer {token}"}
 
@@ -21,7 +30,7 @@ def createModelRepo(token: str, name: str, organization: str = None) -> Response
 
 
 def makePrivateModelRepo(
-    token: str, name: str, organization: str, private: bool = True
+    token: str, organization: str, name: str, private: bool = True
 ) -> Response:
     url: str = f"{rootURL}/api/{organization}/{name}/settings"
     headers: dict = {"authorization": f"Bearer {token}"}
@@ -39,21 +48,27 @@ def moveModelRepo(token: str, fromRepo: str, toRepo: str) -> Response:
 
 
 def uploadFileToModelRepo(
-    token: str, filepath: str, name: str, organization: str, revision: str = "1"
+    token: str,
+    filepath: str,
+    organization: str,
+    name: str,
+    revision: str = "main",
+    pullRequest: bool = False,
 ) -> Response:
     path: Path = Path(filepath)
 
-    url: str = (
-        f"{rootURL}/api/model/{name}/{organization}/upload/{revision}/{path.name}"
-    )
+    if pullRequest:
+        url: str = f"{rootURL}/api/{organization}/{name}/upload/{revision}/{path.name}?create_pr=1"
+    else:
+        url: str = f"{rootURL}/api/{organization}/{name}/upload/{revision}/{path.name}"
     headers: dict = {"authorization": f"Bearer {token}"}
     with open(filepath, "rb") as bytesFile:
-        u: Response = post(url, data=bytesFile.raw, headers=headers)
+        c: Response = post(url, data=bytesFile.raw, headers=headers)
         bytesFile.close()
-    return u
+    return c
 
 
-def deleteModelRepo(token: str, name: str, organization: str) -> Response:
+def deleteModelRepo(token: str, organization: str, name: str) -> Response:
     url: str = f"{rootURL}/api/repos/delete"
     headers: dict = {"authorization": f"Bearer {token}"}
     json: dict = {"name": name, "organization": organization}
