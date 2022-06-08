@@ -1,5 +1,3 @@
-from argparse import Namespace
-from getpass import getpass
 from pathlib import Path
 
 from requests import delete, get, post, put
