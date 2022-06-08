@@ -110,7 +110,7 @@ def _verboseUpload(
 
 def _verboseMove(token: str, username: str, fromRepo: str, toRepo: str) -> None:
     print(
-        f"===\nMoving repository from {fromRepo} to {toRepo} with {', '.join(username)}"
+        f"===\nMoving repository from {fromRepo} to {toRepo} with {username}"
     )
     move: int = moveModelRepo(token=token, fromRepo=fromRepo, toRepo=toRepo).status_code
     print(f"Status code results: {[move]}")
