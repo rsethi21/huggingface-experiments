@@ -2,6 +2,7 @@ from pathlib import Path
 
 from requests import delete, get, post, put
 from requests.models import Response
+
 from huggingface_experiments.utils.args import apiArgs
 
 rootURL: str = "https://huggingface.co"
@@ -47,7 +48,12 @@ def moveModelRepo(token: str, fromRepo: str, toRepo: str) -> Response:
 
 
 def uploadFileToModelRepo(
-    token: str, filepath: str, organization: str, name: str, revision: str = "main", pullRequest: bool = False
+    token: str,
+    filepath: str,
+    organization: str,
+    name: str,
+    revision: str = "main",
+    pullRequest: bool = False,
 ) -> Response:
     path: Path = Path(filepath)
 
