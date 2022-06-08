@@ -1,4 +1,5 @@
 from argparse import Namespace
+from email.policy import HTTP
 
 from huggingface_hub import (create_repo, delete_repo, move_repo,
                              update_repo_visibility, upload_file, whoami)
@@ -21,15 +22,26 @@ def _verboseCreateRepo(
     organization: str, repository: str, tokenList: list, usernameList: list
 ) -> None:
     print(f"===\nCreating {organization}/{repository} with {', '.join(usernameList)}")
-    adminCreate: str = create_repo(
-        repo_id=f"{organization}/{repository}", token=tokenList[0]
-    )
-    writeCreate: str = create_repo(
-        repo_id=f"{organization}/{repository}", token=tokenList[1]
-    )
-    readCreate: str = create_repo(
-        repo_id=f"{organization}/{repository}", token=tokenList[2]
-    )
+    try:
+        adminCreate: str = create_repo(
+            repo_id=f"{organization}/{repository}", token=tokenList[0]
+        )
+    except HTTPError:
+        print("404 Error When Creating Repo. with Admin Permissions")
+
+    try:
+        writeCreate: str = create_repo(
+            repo_id=f"{organization}/{repository}", token=tokenList[1]
+        )
+    except HTTPError:
+        print("404 Error When Creating Repo with Write Permissions")
+    try:
+        readCreate: str = create_repo(
+            repo_id=f"{organization}/{repository}", token=tokenList[2]
+        )
+    except HTTPError:
+        print("404 Error When Creating Repo with Write Permissions")
+    
     print(f"Status code results: {[adminCreate, writeCreate, readCreate]}")
 
 
@@ -37,9 +49,12 @@ def _verboseSetPrivate(
     organization: str, repository: str, token: str, username: str
 ) -> None:
     print(f"===\nSetting private {organization}/{repository} with {username}")
-    private: dict = update_repo_visibility(
-        repo_id=f"{organization}/{repository}", private=True, token=token
-    )
+    try:
+        private: dict = update_repo_visibility(
+            repo_id=f"{organization}/{repository}", private=True, token=token
+        )
+    except HTTPError:
+        print("404 Error When Setting Visibility to Private")
     print(f"Status code result: {[private]}")
 
 
@@ -49,15 +64,24 @@ def _verboseSetPublic(
     print(
         f"===\nSetting public {organization}/{repository} with {', '.join(usernameList)}"
     )
-    adminPublic: dict = update_repo_visibility(
-        repo_id=f"{organization}/{repository}", private=False, token=tokenList[0]
-    )
-    writePublic: dict = update_repo_visibility(
-        repo_id=f"{organization}/{repository}", private=False, token=tokenList[1]
-    )
-    readPublic: dict = update_repo_visibility(
-        repo_id=f"{organization}/{repository}", private=False, token=tokenList[2]
-    )
+    try:
+        adminPublic: dict = update_repo_visibility(
+            repo_id=f"{organization}/{repository}", private=False, token=tokenList[0]
+        )
+    except HTTPError:
+        print("404 Error when trying to set visibility to Public with Admin Permissions")
+    try:
+        writePublic: dict = update_repo_visibility(
+            repo_id=f"{organization}/{repository}", private=False, token=tokenList[1]
+        )
+    except HTTPError:
+        print("404 Error when trying to set visibility to Public with Write Permissions")
+    try:
+        readPublic: dict = update_repo_visibility(
+            repo_id=f"{organization}/{repository}", private=False, token=tokenList[2]
+        )
+    except HTTPError:
+        print("404 Error when trying to set visibility to Public with Read Permissions")
     print(f"Status code results: {[adminPublic, writePublic, readPublic]}")
 
 
@@ -76,30 +100,42 @@ def _verboseUpload(
         print(
             f"===\nCommitting file to {organization}/{repository} with {', '.join(usernameList)}"
         )
-    adminCommit: str = upload_file(
-        path_or_fileobj="test/adminTest.txt",
-        path_in_repo=".",
-        repo_id=f"{organization}/{repository}",
-        token=tokenList[0],
-    )
-    writeCommit: str = upload_file(
-        path_or_fileobj="test/writeTest.txt",
-        path_in_repo=".",
-        repo_id=f"{organization}/{repository}",
-        token=tokenList[0],
-    )
-    readCommit: str = upload_file(
-        path_or_fileobj="test/readTest.txt",
-        path_in_repo=".",
-        repo_id=f"{organization}/{repository}",
-        token=tokenList[0],
-    )
+    try:
+        adminCommit: str = upload_file(
+            path_or_fileobj="test/adminTest.txt",
+            path_in_repo=".",
+            repo_id=f"{organization}/{repository}",
+            token=tokenList[0],
+        )
+    except HTTPError:
+        print("404 Error when committing to repo with admin priveledge")
+    try:
+        writeCommit: str = upload_file(
+            path_or_fileobj="test/writeTest.txt",
+            path_in_repo=".",
+            repo_id=f"{organization}/{repository}",
+            token=tokenList[0],
+        )
+    except HTTPError:
+        print("404 Error when committing to repo with write priveledge")
+    try:
+        readCommit: str = upload_file(
+            path_or_fileobj="test/readTest.txt",
+            path_in_repo=".",
+            repo_id=f"{organization}/{repository}",
+            token=tokenList[0],
+        )
+    except HTTPError:
+        print("404 Error when committing to repo with read priveledge")
     print(f"Status code results: {[adminCommit, writeCommit, readCommit]}")
 
 
 def _verboseMove(token: str, username: str, fromRepo: str, toRepo: str) -> None:
     print(f"===\nMoving repository from {fromRepo} to {toRepo} with {username}")
-    move_repo(from_id=fromRepo, to_id=toRepo, token=token)
+    try:
+        move_repo(from_id=fromRepo, to_id=toRepo, token=token)
+    except HTTPError:
+        print("404 Error when moving repo")
 
 
 def test(
