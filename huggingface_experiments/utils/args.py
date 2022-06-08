@@ -29,6 +29,7 @@ def apiArgs() -> Namespace:
         prog=f"{name} API Experiments",
         usage="Experiments to test the HuggingFace.co REST API",
         epilog=f"Tests written by: {', '.join(authors)}",
+        formatter_class=SortingHelpFormatter,
     )
     parser.add_argument(
         "-a",
